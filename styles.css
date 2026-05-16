@@ -1,0 +1,533 @@
+/* Lumen — vanilla CSS port of the React template.
+   Mirrors src/styles.css tokens, glassmorphism, blobs, and motion. */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Space+Grotesk:wght@400..700&display=swap");
+
+:root {
+  --radius: 1.25rem;
+
+  --background: oklch(0.985 0.012 95);
+  --foreground: oklch(0.22 0.04 280);
+  --card: oklch(1 0 0);
+  --muted: oklch(0.96 0.02 90);
+  --muted-foreground: oklch(0.5 0.03 280);
+  --primary: oklch(0.62 0.22 295);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent: oklch(0.85 0.18 75);
+  --border: oklch(0.9 0.02 280 / 0.6);
+
+  --blob-1: oklch(0.82 0.18 25);
+  --blob-2: oklch(0.78 0.2 200);
+  --blob-3: oklch(0.85 0.18 130);
+  --chip: oklch(0.95 0.04 295);
+  --chip-foreground: oklch(0.4 0.18 295);
+
+  --shadow-soft: 0 10px 40px -12px color-mix(in oklab, var(--primary) 25%, transparent);
+  --shadow-pop: 0 20px 60px -15px color-mix(in oklab, var(--blob-2) 45%, transparent);
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark {
+  --background: oklch(0.18 0.04 280);
+  --foreground: oklch(0.97 0.01 95);
+  --card: oklch(0.23 0.04 280);
+  --muted: oklch(0.27 0.03 280);
+  --muted-foreground: oklch(0.75 0.02 280);
+  --primary: oklch(0.78 0.18 295);
+  --primary-foreground: oklch(0.18 0.04 280);
+  --accent: oklch(0.82 0.16 75);
+  --border: oklch(1 0 0 / 0.12);
+  --blob-1: oklch(0.62 0.2 25);
+  --blob-2: oklch(0.6 0.2 200);
+  --blob-3: oklch(0.65 0.2 130);
+  --chip: oklch(0.3 0.06 295);
+  --chip-foreground: oklch(0.9 0.1 295);
+}
+
+* { box-sizing: border-box; border-color: var(--border); }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  color: var(--foreground);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(at 10% 0%, color-mix(in oklab, var(--blob-1) 35%, transparent) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, color-mix(in oklab, var(--blob-2) 35%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, color-mix(in oklab, var(--blob-3) 30%, transparent) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; margin: 0; }
+button { font-family: inherit; cursor: pointer; border: 0; background: transparent; color: inherit; }
+a { color: inherit; }
+
+/* ---------- Utilities ---------- */
+.glass {
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.shadow-soft { box-shadow: var(--shadow-soft); }
+.shadow-pop { box-shadow: var(--shadow-pop); }
+.text-gradient {
+  background: linear-gradient(120deg, var(--blob-1), var(--primary), var(--blob-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.block { display: block; }
+.mt16 { margin-top: 1rem; }
+
+/* ---------- 3D Scene ---------- */
+.scene3d {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.scene-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image:
+    linear-gradient(var(--foreground) 1px, transparent 1px),
+    linear-gradient(90deg, var(--foreground) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+          mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(40px);
+  opacity: 0.6;
+}
+.blob-1 { background: var(--blob-1); width: 380px; height: 380px; top: -80px; left: -80px;  animation: blob1 18s ease-in-out infinite; }
+.blob-2 { background: var(--blob-2); width: 420px; height: 420px; top: 100px; right: -120px; animation: blob2 22s ease-in-out infinite; }
+.blob-3 { background: var(--blob-3); width: 320px; height: 320px; bottom: -80px; left: 30%;  animation: blob3 20s ease-in-out infinite; }
+
+@keyframes blob1 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,30px)} 66%{transform:translate(-20px,-10px)} }
+@keyframes blob2 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-30px,40px)} 66%{transform:translate(20px,-20px)} }
+@keyframes blob3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(20px,-20px)} 66%{transform:translate(-30px,30px)} }
+
+.ring {
+  position: absolute;
+  right: 10%;
+  top: 18%;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 9999px;
+  border: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  animation: rotate 30s linear infinite;
+}
+.ring-dot {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: var(--blob-1);
+  box-shadow: var(--shadow-pop);
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* ---------- Floating Shapes ---------- */
+.float-shape { position: absolute; pointer-events: none; }
+.float-shape.cube {
+  border-radius: 1rem;
+  background: linear-gradient(135deg, color-mix(in oklab, white 30%, var(--c)), var(--c));
+  box-shadow:
+    0 30px 60px -10px color-mix(in oklab, var(--c) 60%, transparent),
+    inset 0 -8px 0 color-mix(in oklab, black 25%, var(--c));
+  animation: floatCube 9s ease-in-out infinite;
+}
+.float-shape.sphere {
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, color-mix(in oklab, white 50%, var(--c)), var(--c) 70%);
+  box-shadow: 0 30px 60px -10px color-mix(in oklab, var(--c) 60%, transparent);
+  animation: floatSphere 6s ease-in-out infinite;
+}
+.float-shape.ring2 {
+  border-radius: 9999px;
+  border: 10px solid var(--c);
+  box-shadow: 0 20px 50px -10px color-mix(in oklab, var(--c) 50%, transparent);
+  animation: rotate 24s linear infinite;
+}
+.float-shape.pill {
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--c), color-mix(in oklab, var(--c) 50%, white));
+  box-shadow: 0 20px 50px -10px color-mix(in oklab, var(--c) 50%, transparent);
+  animation: floatPill 8s ease-in-out infinite;
+}
+@keyframes floatCube { 0%,100%{transform:rotateX(10deg) rotateY(-15deg)} 50%{transform:rotateX(-10deg) rotateY(15deg)} }
+@keyframes floatSphere { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-14px) rotate(8deg)} }
+@keyframes floatPill { 0%,100%{transform:translateY(0) rotate(-10deg)} 50%{transform:translateY(10px) rotate(10deg)} }
+
+/* ---------- Layout ---------- */
+.toolbar-wrap { position: sticky; top: 0; z-index: 40; }
+.toolbar-row {
+  max-width: 72rem;
+  margin: 1rem auto 0;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.brand { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; }
+.brand-mark {
+  height: 1.75rem; width: 1.75rem; border-radius: 9999px;
+  background: linear-gradient(135deg, var(--blob-1), var(--primary), var(--blob-2));
+}
+.brand-name { font-family: var(--font-display); font-size: 0.875rem; font-weight: 600; }
+.chip {
+  margin-left: 0.25rem;
+  background: var(--chip);
+  color: var(--chip-foreground);
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 2px 8px;
+}
+.actions { display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 9999px; }
+.icon-btn {
+  height: 2.25rem; width: 2.25rem; border-radius: 9999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background-color .15s;
+}
+.icon-btn:hover { background: var(--muted); }
+.edit-btn {
+  height: 2.25rem;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--primary), var(--blob-1));
+  color: var(--primary-foreground);
+  font-size: 0.875rem; font-weight: 500;
+  box-shadow: var(--shadow-pop);
+  transition: transform .15s;
+}
+.edit-btn:hover { transform: translateY(-1px); }
+
+.main {
+  position: relative;
+  z-index: 10;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 8rem;
+}
+@media (min-width: 768px) { .main { padding-top: 4rem; } }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 768px) { .hero { grid-template-columns: 1.3fr 1fr; } }
+
+.hero-cube { right: 42%; top: 0.5rem; height: 5rem; width: 5rem; display: none; }
+.hero-ring { right: 6%; top: 280px; height: 6rem; width: 6rem; display: none; }
+.hero-sphere { bottom: -30px; left: 20%; height: 4rem; width: 4rem; display: none; }
+@media (min-width: 768px) { .hero-cube, .hero-ring, .hero-sphere { display: block; } }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--chip); color: var(--chip-foreground);
+  padding: 4px 12px; border-radius: 9999px;
+  font-size: 0.75rem; font-weight: 500;
+  margin-bottom: 1rem;
+}
+.display-1 {
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 700;
+}
+.lead {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+@media (min-width: 768px) { .lead { font-size: 1.5rem; } }
+.tagline {
+  margin-top: 1rem;
+  max-width: 36rem;
+  color: var(--muted-foreground);
+}
+
+.hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--foreground);
+  color: var(--background);
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem; font-weight: 500;
+  text-decoration: none;
+  box-shadow: var(--shadow-pop);
+  transition: transform .15s;
+}
+.btn-primary:hover { transform: scale(1.02); }
+.btn-primary .arrow { transition: transform .2s; }
+.btn-primary:hover .arrow { transform: translate(2px, -2px); }
+.btn-glass {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.25rem; border-radius: 9999px;
+  font-size: 0.875rem; font-weight: 500; text-decoration: none;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.btn-glass:hover { background: var(--muted); }
+
+.stats {
+  margin-top: 2.5rem;
+  max-width: 28rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+.stat-card {
+  border-radius: 1rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+.stat-num { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+.stat-label { margin-top: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-foreground); }
+
+/* ---------- Avatar Card ---------- */
+.hero-card { position: relative; }
+.avatar-card {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 24rem;
+  aspect-ratio: 4 / 5;
+  border-radius: 2rem;
+  padding: 0.75rem;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  transition: transform .25s;
+}
+.avatar-card:hover { transform: rotate(1deg) translateY(-4px); }
+.avatar-inner {
+  position: relative;
+  height: 100%; width: 100%;
+  border-radius: 1.6rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--blob-1), var(--primary), var(--blob-2));
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar-inner img { height: 100%; width: 100%; object-fit: cover; }
+.avatar-initials { font-family: var(--font-display); font-size: 6rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+.upload-btn {
+  position: absolute; bottom: 12px; right: 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.9); color: #000;
+  padding: 6px 12px; border-radius: 9999px;
+  font-size: 12px; font-weight: 500;
+  box-shadow: var(--shadow-pop);
+}
+.avatar-deco-tl { position: absolute; top: -1rem; left: -1rem; height: 4rem; width: 4rem; transform: rotate(12deg); border-radius: 1rem; background: var(--accent); box-shadow: var(--shadow-pop); }
+.avatar-deco-br { position: absolute; bottom: -1rem; right: -1rem; height: 5rem; width: 5rem; border-radius: 9999px; background: var(--blob-3); box-shadow: var(--shadow-pop); }
+
+/* ---------- Socials ---------- */
+.socials { margin-top: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.social-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 9999px;
+  font-size: 12px; font-weight: 500; text-decoration: none;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.social-pill:hover { background: var(--muted); }
+.social-edit { display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 9999px; font-size: 12px;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.social-edit input { background: transparent; border: 0; outline: none; padding: 2px 4px; color: inherit; font: inherit; }
+.social-edit input.lbl { width: 4rem; }
+.social-edit input.url { width: 8rem; }
+.add-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px dashed var(--border);
+  padding: 6px 12px; border-radius: 9999px; font-size: 12px;
+}
+.add-link:hover { background: var(--muted); }
+
+/* ---------- Sections ---------- */
+.section { margin-top: 6rem; position: relative; }
+.section-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.section .dot { height: 10px; width: 10px; border-radius: 9999px; background: var(--accent-color, var(--primary)); }
+.section .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.2em; color: var(--muted-foreground); }
+.section .rule { flex: 1; height: 1px; background: var(--border); }
+.about { font-size: 1.125rem; line-height: 1.7; max-width: 56rem; }
+
+/* ---------- Cards (experience/education) ---------- */
+.stack { display: flex; flex-direction: column; gap: 0.75rem; }
+.card-row {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  box-shadow: var(--shadow-soft);
+  transition: transform .2s;
+}
+.card-row:hover { transform: translateX(4px); }
+@media (min-width: 768px) { .card-row { grid-template-columns: 1fr auto; } }
+.card-row h3 { font-size: 1.25rem; font-weight: 600; }
+.card-meta { margin-top: 0.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
+.card-row p { margin-top: 0.75rem; font-size: 0.875rem; }
+.del-btn { align-self: start; height: 2rem; width: 2rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; }
+.del-btn:hover { background: var(--muted); }
+
+/* ---------- Skills ---------- */
+.skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-soft);
+  transition: transform .15s;
+}
+.skill:hover { transform: translateY(-3px) rotate(-1deg); }
+.skill .dot2 { height: 8px; width: 8px; border-radius: 9999px; background: linear-gradient(135deg, var(--blob-1), var(--primary)); }
+.skill input { background: transparent; border: 0; outline: none; width: 6rem; color: inherit; font: inherit; }
+.skill .x { opacity: 0; transition: opacity .15s; }
+.skill:hover .x { opacity: 1; }
+
+/* ---------- Projects ---------- */
+.grid-2 { display: grid; gap: 1.25rem; }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+.project {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 0.75rem;
+  background: color-mix(in oklab, var(--card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: transform .25s;
+}
+.project:hover { transform: translateY(-6px); }
+.project-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.project-img img { height: 100%; width: 100%; object-fit: cover; transition: transform .7s; }
+.project:hover .project-img img { transform: scale(1.05); }
+.project-letter { font-family: var(--font-display); font-size: 3rem; font-weight: 700; color: rgba(255,255,255,0.8); }
+.project-tag {
+  position: absolute; top: 12px; left: 12px;
+  background: rgba(255,255,255,0.85); color: #000;
+  padding: 4px 10px; border-radius: 9999px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+}
+.project-img-btn {
+  position: absolute; top: 12px; right: 12px;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.9); color: #000;
+  padding: 4px 10px; border-radius: 9999px;
+  font-size: 10px; font-weight: 500;
+}
+.project-body { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; padding: 1rem; }
+.project-body h3 { font-size: 1.125rem; font-weight: 600; }
+.project-body p { margin-top: 0.25rem; font-size: 0.875rem; color: var(--muted-foreground); }
+.project-edit-fields { margin-top: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.75rem; }
+.project-edit-fields input { background: var(--muted); border: 0; outline: none; padding: 4px 8px; border-radius: 6px; color: inherit; font: inherit; }
+.project-link {
+  height: 2rem; width: 2rem; border-radius: 9999px;
+  background: var(--foreground); color: var(--background);
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+}
+.add-dashed {
+  width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border: 2px dashed var(--border);
+  padding: 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--muted-foreground);
+}
+.add-dashed:hover { border-color: var(--primary); background: var(--muted); color: var(--foreground); }
+
+/* ---------- Contact ---------- */
+.contact {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .contact { padding: 3rem; } }
+.contact-sphere { right: 24px; top: 24px; height: 5rem; width: 5rem; }
+.contact-pill { bottom: 24px; right: 8rem; height: 2rem; width: 6rem; }
+.display-2 { font-size: clamp(1.875rem, 5vw, 3rem); font-weight: 700; }
+.contact-grid { margin-top: 1.5rem; display: grid; gap: 1rem; }
+@media (min-width: 768px) { .contact-grid { grid-template-columns: repeat(3, 1fr); } }
+.contact-row {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 1rem;
+}
+.contact-icon {
+  height: 2.25rem; width: 2.25rem; border-radius: 9999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--blob-1));
+  color: white;
+}
+
+.footer { margin-top: 4rem; text-align: center; font-size: 0.875rem; color: var(--muted-foreground); }
+.footer a { text-decoration: underline; }
+
+/* ---------- Editable affordance ---------- */
+.edit-mode .editable {
+  outline: none;
+  border-radius: 6px;
+  padding: 0 4px;
+  margin: 0 -4px;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 40%, transparent);
+  transition: box-shadow .15s, background .15s;
+}
+.edit-mode .editable:focus {
+  box-shadow: 0 0 0 2px var(--primary);
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* Initial pop-in */
+.pop-in { animation: popIn .5s ease both; }
+@keyframes popIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
